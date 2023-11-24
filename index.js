@@ -26,7 +26,19 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         await client.connect();
-        // Send a ping to confirm a successful connection
+
+
+        const subscriberCollection = client.db("vectorGymDB").collection('subscriber');
+
+
+        // post method added for for subscriber
+        app.post('/subscriber', async (req, res) => {
+            const subscriber = req.body;
+            const result = await subscriberCollection.insertOne(subscriber);
+            res.send(result)
+        })
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
