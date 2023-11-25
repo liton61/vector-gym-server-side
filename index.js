@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hgznyse.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+// console.log(uri);
 
 
 const client = new MongoClient(uri, {
@@ -31,12 +31,18 @@ async function run() {
         const subscriberCollection = client.db("vectorGymDB").collection('subscriber');
 
 
-        // post method added for for subscriber
+        // post method added for subscriber
         app.post('/subscriber', async (req, res) => {
             const subscriber = req.body;
             const result = await subscriberCollection.insertOne(subscriber);
             res.send(result)
         })
+
+        // get method added for subscriber
+        app.get("/subscriber", async (req, res) => {
+            const result = await subscriberCollection.find().toArray();
+            res.send(result);
+        });
 
 
         await client.db("admin").command({ ping: 1 });
