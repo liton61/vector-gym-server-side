@@ -53,16 +53,16 @@ async function run() {
         });
 
         // get method added for trainer application
-        // app.get('/trainerApplication', async (req, res) => {
-        //     console.log(req.query.role);
+        app.get('/trainerApplication', async (req, res) => {
+            console.log(req.query.role);
 
-        //     let query = {}
-        //     if (req.query?.role) {
-        //         query = { role: req.query.role }
-        //     }
-        //     const result = await trainerApplicationCollection.find(query).toArray();
-        //     res.send(result)
-        // })
+            let query = {}
+            if (req.query?.role) {
+                query = { role: req.query.role }
+            }
+            const result = await trainerApplicationCollection.find(query).toArray();
+            res.send(result)
+        })
 
         // get method added for gallery
         app.get('/photo', async (req, res) => {
