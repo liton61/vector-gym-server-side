@@ -40,11 +40,11 @@ async function run() {
             res.send(result)
         })
         // post method added for trainer
-        // app.post('/trainerApplication', async (req, res) => {
-        //     const trainer = req.body;
-        //     const result = await trainerApplicationCollection.insertOne(trainer);
-        //     res.send(result)
-        // })
+        app.post('/trainerApplication', async (req, res) => {
+            const trainer = req.body;
+            const result = await trainerApplicationCollection.insertOne(trainer);
+            res.send(result)
+        })
 
         // get method added for subscriber
         app.get("/subscriber", async (req, res) => {
@@ -68,7 +68,7 @@ async function run() {
         app.get('/photo', async (req, res) => {
             const result = await photoCollection.find().toArray();
             res.send(result);
-          })
+        })
 
 
         await client.db("admin").command({ ping: 1 });
