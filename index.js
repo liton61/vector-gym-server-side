@@ -29,6 +29,8 @@ async function run() {
 
 
         const subscriberCollection = client.db("vectorGymDB").collection('subscriber');
+        const trainerApplicationCollection = client.db("vectorGymDB").collection('trainerApplication');
+        const photoCollection = client.db("vectorGymDB").collection('photo');
 
 
         // post method added for subscriber
@@ -37,12 +39,36 @@ async function run() {
             const result = await subscriberCollection.insertOne(subscriber);
             res.send(result)
         })
+        // post method added for trainer
+        // app.post('/trainerApplication', async (req, res) => {
+        //     const trainer = req.body;
+        //     const result = await trainerApplicationCollection.insertOne(trainer);
+        //     res.send(result)
+        // })
 
         // get method added for subscriber
         app.get("/subscriber", async (req, res) => {
             const result = await subscriberCollection.find().toArray();
             res.send(result);
         });
+
+        // get method added for trainer application
+        // app.get('/trainerApplication', async (req, res) => {
+        //     console.log(req.query.role);
+
+        //     let query = {}
+        //     if (req.query?.role) {
+        //         query = { role: req.query.role }
+        //     }
+        //     const result = await trainerApplicationCollection.find(query).toArray();
+        //     res.send(result)
+        // })
+
+        // get method added for gallery
+        app.get('/photo', async (req, res) => {
+            const result = await photoCollection.find().toArray();
+            res.send(result);
+          })
 
 
         await client.db("admin").command({ ping: 1 });
