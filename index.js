@@ -29,7 +29,8 @@ async function run() {
 
 
         const subscriberCollection = client.db("vectorGymDB").collection('subscriber');
-        const trainerApplicationCollection = client.db("vectorGymDB").collection('trainerApplication');
+        const trainerInfoCollection = client.db('vectorGymDB').collection('trainerInfo');
+        // const trainerApplicationCollection = client.db("vectorGymDB").collection('trainerApplication');
         const photoCollection = client.db("vectorGymDB").collection('photo');
 
 
@@ -40,11 +41,11 @@ async function run() {
             res.send(result)
         })
         // post method added for trainer
-        app.post('/trainerApplication', async (req, res) => {
-            const trainer = req.body;
-            const result = await trainerApplicationCollection.insertOne(trainer);
-            res.send(result)
-        })
+        // app.post('/trainerApplication', async (req, res) => {
+        //     const trainer = req.body;
+        //     const result = await trainerApplicationCollection.insertOne(trainer);
+        //     res.send(result)
+        // })
 
         // get method added for subscriber
         app.get("/subscriber", async (req, res) => {
@@ -52,17 +53,23 @@ async function run() {
             res.send(result);
         });
 
-        // get method added for trainer application
-        app.get('/trainerApplication', async (req, res) => {
-            console.log(req.query.role);
+        // get method added for trainerInfo
+        app.get("/trainerInfo", async (req, res) => {
+            const result = await trainerInfoCollection.find().toArray();
+            res.send(result);
+        });
 
-            let query = {}
-            if (req.query?.role) {
-                query = { role: req.query.role }
-            }
-            const result = await trainerApplicationCollection.find(query).toArray();
-            res.send(result)
-        })
+        // get method added for trainer application
+        // app.get('/trainerApplication', async (req, res) => {
+        //     console.log(req.query.role);
+
+        //     let query = {}
+        //     if (req.query?.role) {
+        //         query = { role: req.query.role }
+        //     }
+        //     const result = await trainerApplicationCollection.find(query).toArray();
+        //     res.send(result)
+        // })
 
         // get method added for gallery
         app.get('/photo', async (req, res) => {
