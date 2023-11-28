@@ -32,6 +32,7 @@ async function run() {
         const trainerInfoCollection = client.db('vectorGymDB').collection('trainerInfo');
         const trainerApplicationCollection = client.db("vectorGymDB").collection('trainerApplication');
         const photoCollection = client.db("vectorGymDB").collection('photo');
+        const usersCollection = client.db("vectorGymDB").collection('users');
 
 
         // post method added for subscriber
@@ -40,10 +41,18 @@ async function run() {
             const result = await subscriberCollection.insertOne(subscriber);
             res.send(result)
         })
+
         // post method added for trainer
         app.post('/trainerApplication', async (req, res) => {
             const trainer = req.body;
             const result = await trainerApplicationCollection.insertOne(trainer);
+            res.send(result)
+        })
+
+        // post method added for user
+        app.post('/users', async (req, res) => {
+            const users = req.body;
+            const result = await usersCollection.insertOne(users);
             res.send(result)
         })
 
