@@ -51,8 +51,13 @@ async function run() {
 
         // post method added for user
         app.post('/users', async (req, res) => {
-            const users = req.body;
-            const result = await usersCollection.insertOne(users);
+            const user = req.body;
+            const query = { email: user.email };
+            const existingUser = await usersCollection.findOne(query);
+            if (existingUser) {
+                return res.send({ message: 'user already exists', insertedId: null })
+            }
+            const result = await usersCollection.insertOne(user);
             res.send(result)
         })
 
@@ -89,6 +94,19 @@ async function run() {
         // get method added for gallery
         app.get('/photo', async (req, res) => {
             const result = await photoCollection.find().toArray();
+            res.send(result);
+        })
+
+        // create admin
+        app.patch('/users/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updatedDoc);
             res.send(result);
         })
 
