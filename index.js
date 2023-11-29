@@ -75,7 +75,7 @@ async function run() {
         // const verifyTrainer = async (req, res, next) => {
         //     const email = req.decoded.email;
         //     const query = { email: email };
-        //     const user = await usersCollection.findOne(query);
+        //     const user = await trainerApplicationCollection.findOne(query);
         //     const isTrainer = user?.role === 'trainer';
         //     if (!isTrainer) {
         //         return res.status(403).send({ message: 'forbidden access' });
@@ -84,12 +84,12 @@ async function run() {
         // }
 
 
-        app.get('/users/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
+        app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
 
-            if (email !== req.decoded.email) {
-                return res.status(403).send({ message: 'forbidden access' })
-            }
+            // if (email !== req.decoded.email) {
+            //     return res.status(403).send({ message: 'forbidden access' })
+            // }
 
             const query = { email: email };
             const user = await usersCollection.findOne(query);
@@ -101,21 +101,21 @@ async function run() {
         })
 
 
-        // app.get('/users/trainer/:email', verifyToken, verifyTrainer, async (req, res) => {
-        //     const email = req.params.email;
+        app.get('/trainerApplication/trainer/:email', async (req, res) => {
+            const email = req.params.email;
 
-        //     if (email !== req.decoded.email) {
-        //         return res.status(403).send({ message: 'forbidden access' })
-        //     }
+            // if (email !== req.decoded.email) {
+            //     return res.status(403).send({ message: 'forbidden access' })
+            // }
 
-        //     const query = { email: email };
-        //     const user = await usersCollection.findOne(query);
-        //     let trainer = false;
-        //     if (user) {
-        //         trainer = user?.role === 'trainer';
-        //     }
-        //     res.send({ trainer });
-        // })
+            const query = { email: email };
+            const user = await trainerApplicationCollection.findOne(query);
+            let trainer = false;
+            if (user) {
+                trainer = user?.role === 'trainer';
+            }
+            res.send({ trainer });
+        })
 
 
         // post method added for subscriber
@@ -206,6 +206,28 @@ async function run() {
 
             const result = await usersCollection.updateOne(filter, updatedDoc);
             res.send(result);
+        })
+
+        app.patch('/trainerApplication/trainer/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    role: 'trainer'
+                }
+            }
+        })
+
+        app.patch('/trainerApplication/:id', (req, res) => {
+            // console.log(req.body);
+            trainerApplicationCollection.updateOne({ _id: new ObjectId(req.params.id) },
+                {
+                    $set: { role: req.body.role }
+                })
+                .then(result => {
+                    // res.send("updated successfully!!!")
+                    res.send(result.modifiedCount > 0)
+                })
         })
 
 
