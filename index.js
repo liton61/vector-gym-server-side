@@ -97,6 +97,12 @@ async function run() {
             res.send(result);
         })
 
+        // get method to get all users from database
+        app.get('/users', async (req, res) => {
+            const result = await usersCollection.find().toArray();
+            res.send(result);
+        });
+
         // create admin
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
