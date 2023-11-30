@@ -34,6 +34,7 @@ async function run() {
         const trainerApplicationCollection = client.db("vectorGymDB").collection('trainerApplication');
         const photoCollection = client.db("vectorGymDB").collection('photo');
         const usersCollection = client.db("vectorGymDB").collection('users');
+        const forumCollection = client.db("vectorGymDB").collection('forum');
 
 
         // jwt related api
@@ -125,6 +126,13 @@ async function run() {
             res.send(result)
         })
 
+        // post method added for forum
+        app.post('/forum', async (req, res) => {
+            const forum = req.body;
+            const result = await forumCollection.insertOne(forum);
+            res.send(result)
+        })
+
         // post method added for trainer
         app.post('/trainerApplication', async (req, res) => {
             const trainer = req.body;
@@ -151,16 +159,27 @@ async function run() {
         });
 
         // get method added for trainerInfo
-        app.get("/trainerInfo", async (req, res) => {
-            const result = await trainerInfoCollection.find().toArray();
-            res.send(result);
-        });
+        // app.get("/trainerInfo", async (req, res) => {
+        //     const result = await trainerInfoCollection.find().toArray();
+        //     res.send(result);
+        // });
 
         // get method added for trainer application
-        app.get("/trainerApplication", async (req, res) => {
-            const result = await trainerApplicationCollection.find().toArray();
-            res.send(result);
-        });
+        // app.get("/trainerApplication", async (req, res) => {
+        //     const result = await trainerApplicationCollection.find().toArray();
+        //     res.send(result);
+        // });
+
+        app.get('/trainerApplication', async (req, res) => {
+            // console.log(req.query.role);
+
+            let query = {}
+            if (req.query?.role) {
+                query = { role: req.query.role }
+            }
+            const result = await trainerApplicationCollection.find(query).toArray();
+            res.send(result)
+        })
 
         // get method added for trainer application
         // app.get('/trainerApplication', async (req, res) => {
@@ -178,6 +197,17 @@ async function run() {
         app.get('/photo', async (req, res) => {
             const result = await photoCollection.find().toArray();
             res.send(result);
+        })
+
+        app.get('/users', async (req, res) => {
+            // console.log(req.query.role);
+
+            let query = {}
+            if (req.query?.role) {
+                query = { role: req.query.role }
+            }
+            const result = await usersCollection.find(query).toArray();
+            res.send(result)
         })
 
         // get method to get all users from database
