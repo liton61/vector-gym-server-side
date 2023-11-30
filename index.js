@@ -35,6 +35,7 @@ async function run() {
         const photoCollection = client.db("vectorGymDB").collection('photo');
         const usersCollection = client.db("vectorGymDB").collection('users');
         const forumCollection = client.db("vectorGymDB").collection('forum');
+        const classesCollection = client.db("vectorGymDB").collection('classes');
 
 
         // jwt related api
@@ -133,6 +134,13 @@ async function run() {
             res.send(result)
         })
 
+        // post method added for forum
+        app.post('/classes', async (req, res) => {
+            const classes = req.body;
+            const result = await classesCollection.insertOne(classes);
+            res.send(result)
+        })
+
         // post method added for trainer
         app.post('/trainerApplication', async (req, res) => {
             const trainer = req.body;
@@ -158,9 +166,15 @@ async function run() {
             res.send(result);
         });
 
-        // get method added for subscriber
+        // get method added for forum
         app.get("/forum", async (req, res) => {
             const result = await forumCollection.find().toArray();
+            res.send(result);
+        });
+
+        // get method added for classes
+        app.get("/classes", async (req, res) => {
+            const result = await classesCollection.find().toArray();
             res.send(result);
         });
 
