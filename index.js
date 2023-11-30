@@ -158,6 +158,12 @@ async function run() {
             res.send(result);
         });
 
+        // get method added for subscriber
+        app.get("/forum", async (req, res) => {
+            const result = await forumCollection.find().toArray();
+            res.send(result);
+        });
+
         // get method added for trainerInfo
         // app.get("/trainerInfo", async (req, res) => {
         //     const result = await trainerInfoCollection.find().toArray();
