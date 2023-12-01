@@ -302,6 +302,18 @@ async function run() {
         });
 
 
+        app.delete("/trainerApplication/:id", async (req, res) => {
+            const id = req.params.id;
+            console.log("delete", id);
+            const query = {
+                _id: new ObjectId(id),
+            };
+            const result = await trainerApplicationCollection.deleteOne(query);
+            // console.log(result);
+            res.send(result);
+        });
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
