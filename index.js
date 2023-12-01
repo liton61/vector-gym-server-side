@@ -280,6 +280,27 @@ async function run() {
                 })
         })
 
+        app.put("/users/:email", async (req, res) => {
+            const email = req.params.email;
+            const data = req.body;
+            // console.log("id", id, data);
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedUSer = {
+                $set: {
+                    name: data.name,
+                    photo: data.photo
+                    // password: data.password,
+                },
+            };
+            const result = await usersCollection.updateOne(
+                filter,
+                updatedUSer,
+                options
+            );
+            res.send(result);
+        });
+
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
