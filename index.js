@@ -3,8 +3,13 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+
+// console.log(stripe);
 const app = express();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
+
+// console.log(process.env.STRIPE_SECRET_KEY);
 
 // middleware
 app.use(cors());
@@ -36,6 +41,9 @@ async function run() {
         const usersCollection = client.db("vectorGymDB").collection('users');
         const forumCollection = client.db("vectorGymDB").collection('forum');
         const classesCollection = client.db("vectorGymDB").collection('classes');
+
+        const paymentHistory = [];
+
 
 
         // jwt related api
@@ -304,7 +312,7 @@ async function run() {
 
         app.delete("/trainerApplication/:id", async (req, res) => {
             const id = req.params.id;
-            console.log("delete", id);
+            // console.log("delete", id);
             const query = {
                 _id: new ObjectId(id),
             };
@@ -312,6 +320,94 @@ async function run() {
             // console.log(result);
             res.send(result);
         });
+
+
+        app.post('/create-payment-intent', async (req, res) => {
+            try {
+                const { price, trainerId } = req.body;
+                const amount = parseInt(price * 100);
+                const userId = trainerId
+                console.log(trainerId);
+
+                const lastPayment = paymentHistory.find(payment => {
+                    return (
+                        payment.userId === userId &&
+                        new Date(payment.timestamp).getMonth() === new Date().getMonth()
+                    );
+                });
+
+                if (lastPayment) {
+                    // User has already made a payment in the current month
+                    return res.status(400).send({ error: 'User has already made a payment this month' });
+                }
+
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: amount,
+                    currency: 'usd',
+                    payment_method_types: ['card']
+                });
+
+
+                paymentHistory.push({
+                    userId: userId,
+                    timestamp: new Date().toISOString(),
+                    amount: amount
+                });
+
+                res.send({
+                    clientSecret: paymentIntent.client_secret
+                });
+                console.log(clientSecret);
+            } catch (error) {
+                console.error('Error creating payment intent:', error);
+                res.status(500).send({ error: 'Error creating payment intent' });
+            }
+        });
+
+
+        // // payment intent
+        // app.post('/create-payment-intent', async (req, res) => {
+        //     const { price } = req.body;
+        //     const amount = parseInt(price * 100);
+        //     console.log(amount, 'amount inside the intent')
+
+        //     const paymentIntent = await stripe.paymentIntents.create({
+        //         amount: amount,
+        //         currency: 'usd',
+        //         payment_method_types: ['card']
+        //     });
+
+        //     res.send({
+        //         clientSecret: paymentIntent.client_secret
+        //     })
+        // });
+
+
+        // app.get('/payments/:email', verifyToken, async (req, res) => {
+        //     const query = { email: req.params.email }
+        //     if (req.params.email !== req.decoded.email) {
+        //         return res.status(403).send({ message: 'forbidden access' });
+        //     }
+        //     const result = await paymentCollection.find(query).toArray();
+        //     res.send(result);
+        // })
+
+        // app.post('/payments', async (req, res) => {
+        //     const payment = req.body;
+        //     const paymentResult = await paymentCollection.insertOne(payment);
+
+        //     //  carefully delete each item from the cart
+        //     console.log('payment info', payment);
+        //     const query = {
+        //         _id: {
+        //             $in: payment.cartIds.map(id => new ObjectId(id))
+        //         }
+        //     };
+
+        //     const deleteResult = await cartCollection.deleteMany(query);
+
+        //     res.send({ paymentResult, deleteResult });
+        // })
 
 
         await client.db("admin").command({ ping: 1 });
